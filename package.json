@@ -4,6 +4,7 @@
   "scripts": {
     "start": "webpack serve --mode development --open",
     "build": "webpack --mode production",
+    "build:deploy": "NODE_ENV=production webpack --mode production",
     "test": "jest",
     "watch-test": "jest --watch"
   },

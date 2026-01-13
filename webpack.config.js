@@ -8,8 +8,9 @@ module.exports = (env, argv) => {
     entry: './src/App.js',
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: 'bundle.[contenthash].js',
+      filename: isProduction ? 'bundle.[contenthash].js' : 'bundle.js',
       clean: true,
+      publicPath: '/',
     },
     module: {
       rules: [
@@ -39,6 +40,7 @@ module.exports = (env, argv) => {
       new HtmlWebpackPlugin({
         template: './index.html',
         inject: 'body',
+        favicon: false, // Disable automatic favicon handling
       }),
     ],
     resolve: {
@@ -46,5 +48,22 @@ module.exports = (env, argv) => {
     },
     mode: isProduction ? 'production' : 'development',
     devtool: isProduction ? false : 'eval-source-map',
+    devServer: {
+      port: 3000,
+      hot: true,
+      historyApiFallback: true,
+      allowedHosts: 'all', // Fix for "Invalid Host header"
+      client: {
+        overlay: {
+          errors: true,
+          warnings: false,
+        },
+      },
+    },
+    performance: {
+      hints: isProduction ? 'warning' : false,
+      maxAssetSize: 500000,
+      maxEntrypointSize: 500000,
+    },
   };
 };
