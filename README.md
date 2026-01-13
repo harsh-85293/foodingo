@@ -2,6 +2,8 @@
 
 Foodingo is a React + Node food-ordering demo app (local workspace).
 
+**Status:** Deployed to Vercel with corrected imports (commit acd3ae9)
+
 Repository: https://github.com/harsh-85293/foodingo
 
 Quick start
