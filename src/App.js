@@ -13,12 +13,12 @@ import { useState } from "react";
 import UserContext from "./utils/UserContext";
 import { Provider } from "react-redux";
 import { appStore } from "./utils/appStore";
-import { AuthProvider } from "./components/auth/AuthContext";
-import LoginPage from "./components/auth/LoginPage";
-import SignupPage from "./components/auth/SignupPage";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
+import { AuthProvider } from "./Components/auth/AuthContext";
+import LoginPage from "./Components/auth/LoginPage";
+import SignupPage from "./Components/auth/SignupPage";
+import ProtectedRoute from "./Components/auth/ProtectedRoute";
 
-const Grocery = lazy(() => import("./components/Grocery"));
+const Grocery = lazy(() => import("./Components/Grocery"));
 
 
 const AppLayout = () => {
