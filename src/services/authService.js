@@ -1,6 +1,7 @@
 // Base API URL - adjust based on your server configuration
+// For now, disable API calls in production since backend is not deployed
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-backend-url.com/api'  // Replace with your actual backend URL
+  ? null  // Disable API calls in production for now
   : 'http://localhost:5000/api';
 
 // Helper function to get auth headers
@@ -31,6 +32,16 @@ export const authService = {
   // Login user
   login: async (email, password) => {
     try {
+      // If no API URL (production without backend), return mock success
+      if (!API_BASE_URL) {
+        return {
+          success: true,
+          message: 'Demo mode - login successful',
+          token: 'demo-token',
+          user: { email: email }
+        };
+      }
+
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -57,6 +68,14 @@ export const authService = {
   // Register new user
   signup: async (email, password) => {
     try {
+      // If no API URL (production without backend), return mock success
+      if (!API_BASE_URL) {
+        return {
+          success: true,
+          message: 'Demo mode - signup successful'
+        };
+      }
+
       const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: {
@@ -88,6 +107,20 @@ export const authService = {
         return {
           success: false,
           message: 'No token found'
+        };
+      }
+
+      // If no API URL (production without backend), return mock success for demo token
+      if (!API_BASE_URL) {
+        if (token === 'demo-token') {
+          return {
+            success: true,
+            user: { email: 'demo@example.com' }
+          };
+        }
+        return {
+          success: false,
+          message: 'Invalid demo token'
         };
       }
 

@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
 import ReactDOM from "react-dom/client";
+import "../index.css"; // Import CSS file
 import { Header } from './Components/Header';
 import Body from './Components/Body';
 import Footer from "./Components/Footer";

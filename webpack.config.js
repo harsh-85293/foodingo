@@ -40,7 +40,7 @@ module.exports = (env, argv) => {
       new HtmlWebpackPlugin({
         template: './index.html',
         inject: 'body',
-        favicon: false, // Disable automatic favicon handling
+        favicon: false,
       }),
     ],
     resolve: {
@@ -50,10 +50,11 @@ module.exports = (env, argv) => {
     devtool: isProduction ? false : 'eval-source-map',
     devServer: {
       port: 3000,
-      hot: true,
+      hot: false, // Disable hot reload for production
       historyApiFallback: true,
-      allowedHosts: 'all', // Fix for "Invalid Host header"
+      allowedHosts: 'all',
       client: {
+        webSocketURL: 'auto://0.0.0.0:0/ws', // Fix WebSocket connection
         overlay: {
           errors: true,
           warnings: false,
