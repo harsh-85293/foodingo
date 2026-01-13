@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html",
+    "build": "cross-env NODE_ENV=production parcel build index.html --no-source-maps",
     "test": "jest",
     "watch-test": "jest --watch"
   },
@@ -13,9 +13,11 @@
   "devDependencies": {
     "@babel/core": "^7.28.0",
     "@babel/preset-env": "^7.28.0",
+    "@parcel/optimizer-terser": "^2.16.3",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "babel-jest": "^30.0.4",
+    "cross-env": "^10.1.0",
     "jest": "^30.0.4",
     "jest-environment-jsdom": "^30.0.4",
     "parcel": "^2.15.2",
