@@ -1,5 +1,7 @@
 // Base API URL - adjust based on your server configuration
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://your-backend-url.com/api'  // Replace with your actual backend URL
+  : 'http://localhost:5000/api';
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {

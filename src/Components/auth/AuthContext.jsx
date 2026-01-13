@@ -104,7 +104,17 @@ export const AuthProvider = ({ children }) => {
 
   // Check authentication status on app load
   useEffect(() => {
-    checkAuthStatus();
+    // Only check auth status if we're not in a development environment without backend
+    const checkAuth = async () => {
+      try {
+        await checkAuthStatus();
+      } catch (error) {
+        console.warn('Auth check failed, continuing without authentication:', error);
+        dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+      }
+    };
+    
+    checkAuth();
   }, []);
 
   // Login function
@@ -187,6 +197,12 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
+      // For production without backend, just set loading to false
+      if (process.env.NODE_ENV === 'production' && !process.env.REACT_APP_API_URL) {
+        dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+        return;
+      }
+
       const response = await authService.verifyToken();
       
       if (response.success) {
@@ -200,9 +216,9 @@ export const AuthProvider = ({ children }) => {
         dispatch({ type: AUTH_ACTIONS.LOGOUT });
       }
     } catch (error) {
-      // Token verification failed, remove token
-      localStorage.removeItem('token');
-      dispatch({ type: AUTH_ACTIONS.LOGOUT });
+      console.warn('Token verification failed, continuing without authentication:', error);
+      // Don't remove token in case it's just a network issue
+      dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
     }
   };
 
