@@ -8,9 +8,9 @@ module.exports = (env, argv) => {
     entry: './src/App.js',
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: isProduction ? 'bundle.[contenthash].js' : 'bundle.js',
+      filename: isProduction ? '[name].[contenthash].js' : '[name].js',
       clean: true,
-      publicPath: '/',
+      publicPath: './',
     },
     module: {
       rules: [
@@ -24,7 +24,7 @@ module.exports = (env, argv) => {
                 ['@babel/preset-env', { targets: 'defaults' }],
                 ['@babel/preset-react', { 
                   runtime: 'automatic',
-                  development: !isProduction
+                  development: false
                 }]
               ],
             },
@@ -47,24 +47,9 @@ module.exports = (env, argv) => {
       extensions: ['.js', '.jsx'],
     },
     mode: isProduction ? 'production' : 'development',
-    devtool: isProduction ? false : 'eval-source-map',
-    devServer: {
-      port: 3000,
-      hot: false, // Disable hot reload for production
-      historyApiFallback: true,
-      allowedHosts: 'all',
-      client: {
-        webSocketURL: 'auto://0.0.0.0:0/ws', // Fix WebSocket connection
-        overlay: {
-          errors: true,
-          warnings: false,
-        },
-      },
-    },
+    devtool: false,
     performance: {
-      hints: isProduction ? 'warning' : false,
-      maxAssetSize: 500000,
-      maxEntrypointSize: 500000,
+      hints: false,
     },
   };
 };

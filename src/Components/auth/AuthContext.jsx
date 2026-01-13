@@ -1,5 +1,28 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { authService } from '../../services/authService';
+
+// Mock auth service for demo mode
+const mockAuthService = {
+  login: async (email, password) => ({
+    success: true,
+    message: 'Demo login successful',
+    token: 'demo-token-' + Date.now(),
+    user: { email: email }
+  }),
+  signup: async (email, password) => ({
+    success: true,
+    message: 'Demo signup successful'
+  }),
+  verifyToken: async () => {
+    const token = localStorage.getItem('token');
+    if (token && token.startsWith('demo-token')) {
+      return {
+        success: true,
+        user: { email: 'demo@example.com' }
+      };
+    }
+    return { success: false, message: 'Invalid token' };
+  }
+};
 
 // Initial state
 const initialState = {
@@ -104,17 +127,8 @@ export const AuthProvider = ({ children }) => {
 
   // Check authentication status on app load
   useEffect(() => {
-    // Only check auth status if we're not in a development environment without backend
-    const checkAuth = async () => {
-      try {
-        await checkAuthStatus();
-      } catch (error) {
-        console.warn('Auth check failed, continuing without authentication:', error);
-        dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
-      }
-    };
-    
-    checkAuth();
+    // Immediately set loading to false for demo mode
+    dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
   }, []);
 
   // Login function
@@ -122,7 +136,7 @@ export const AuthProvider = ({ children }) => {
     try {
       dispatch({ type: AUTH_ACTIONS.LOGIN_START });
       
-      const response = await authService.login(email, password);
+      const response = await mockAuthService.login(email, password);
       
       if (response.success) {
         // Store token in localStorage
@@ -145,7 +159,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, message: response.message };
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Network error during login';
+      const errorMessage = 'Demo login error';
       dispatch({
         type: AUTH_ACTIONS.LOGIN_FAILURE,
         payload: errorMessage
@@ -159,7 +173,7 @@ export const AuthProvider = ({ children }) => {
     try {
       dispatch({ type: AUTH_ACTIONS.SIGNUP_START });
       
-      const response = await authService.signup(email, password);
+      const response = await mockAuthService.signup(email, password);
       
       if (response.success) {
         dispatch({ type: AUTH_ACTIONS.SIGNUP_SUCCESS });
@@ -172,7 +186,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, message: response.message, errors: response.errors };
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Network error during signup';
+      const errorMessage = 'Demo signup error';
       dispatch({
         type: AUTH_ACTIONS.SIGNUP_FAILURE,
         payload: errorMessage
@@ -190,34 +204,10 @@ export const AuthProvider = ({ children }) => {
   // Check authentication status
   const checkAuthStatus = async () => {
     try {
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
-        return;
-      }
-
-      // For production without backend, just set loading to false
-      if (process.env.NODE_ENV === 'production' && !process.env.REACT_APP_API_URL) {
-        dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
-        return;
-      }
-
-      const response = await authService.verifyToken();
-      
-      if (response.success) {
-        dispatch({
-          type: AUTH_ACTIONS.SET_USER,
-          payload: response.user
-        });
-      } else {
-        // Token is invalid, remove it
-        localStorage.removeItem('token');
-        dispatch({ type: AUTH_ACTIONS.LOGOUT });
-      }
+      // Always set loading to false in demo mode
+      dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
     } catch (error) {
-      console.warn('Token verification failed, continuing without authentication:', error);
-      // Don't remove token in case it's just a network issue
+      console.warn('Auth check failed, continuing without authentication:', error);
       dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
     }
   };

@@ -1,8 +1,5 @@
-// Base API URL - adjust based on your server configuration
-// For now, disable API calls in production since backend is not deployed
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? null  // Disable API calls in production for now
-  : 'http://localhost:5000/api';
+// Base API URL - completely disable API calls in production for demo
+const API_BASE_URL = null;
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
