@@ -31,16 +31,21 @@ const corsOptions = {
   preflightContinue: false
 };
 
-// Apply CORS middleware before all routes
-app.use(cors(corsOptions));
-
-// Explicitly handle preflight OPTIONS requests for all routes
-app.options('*', (req, res) => {
+// Add CORS headers to ALL requests first (before body parsing)
+app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers');
-  res.sendStatus(200);
+  
+  // Handle preflight OPTIONS requests immediately
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
 });
+
+// Apply CORS middleware as well (double protection)
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -63,8 +68,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Handle 404 routes
+// Handle 404 routes (but skip OPTIONS requests as they're handled above)
 app.use('*', (req, res) => {
+  // Don't interfere with OPTIONS requests
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
   res.status(404).json({
     success: false,
     message: 'Route not found'
