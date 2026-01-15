@@ -11,7 +11,7 @@ module.exports = (env, argv) => {
       path: path.resolve(__dirname, 'dist'),
       filename: isProduction ? '[name].[contenthash].js' : '[name].js',
       clean: true,
-      publicPath: './',
+      publicPath: '/',
     },
     module: {
       rules: [
@@ -45,7 +45,8 @@ module.exports = (env, argv) => {
       }),
       new CopyWebpackPlugin({
         patterns: [
-          { from: 'public/favicon.ico', to: 'favicon.ico' }
+          { from: 'public/favicon.ico', to: 'favicon.ico' },
+          { from: 'public/_redirects', to: '_redirects', toType: 'file' }
         ],
       }),
     ],
