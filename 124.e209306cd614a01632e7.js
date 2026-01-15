@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkswiggy_app=self.webpackChunkswiggy_app||[]).push([[124],{124(e,s,a){a.r(s),a.d(s,{default:()=>c});var i=a(848);const c=()=>(0,i.jsx)("div",{children:(0,i.jsx)("h1",{children:"Our grocery store, and we have a lot of child components inside this web pages!!!"})})}}]);
