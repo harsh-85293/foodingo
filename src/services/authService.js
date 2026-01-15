@@ -1,7 +1,7 @@
 const API_BASE_URL = (
   (typeof window !== 'undefined' && window.__FOODINGO_API__) ||
   ((typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) ? process.env.REACT_APP_API_URL : null) ||
-  'https://foodingo-api.onrender.com/api'
+  '/api'  // Use relative path since API is now on the same server
 );
 
 // Helper function to get auth headers
