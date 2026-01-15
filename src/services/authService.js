@@ -1,5 +1,8 @@
-// Base API URL - completely disable API calls in production for demo
-const API_BASE_URL = null;
+const API_BASE_URL = (
+  (typeof window !== 'undefined' && window.__FOODINGO_API__) ||
+  ((typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) ? process.env.REACT_APP_API_URL : null) ||
+  'https://foodingo-api.onrender.com/api'
+);
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -29,16 +32,6 @@ export const authService = {
   // Login user
   login: async (email, password) => {
     try {
-      // If no API URL (production without backend), return mock success
-      if (!API_BASE_URL) {
-        return {
-          success: true,
-          message: 'Demo mode - login successful',
-          token: 'demo-token',
-          user: { email: email }
-        };
-      }
-
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -65,14 +58,6 @@ export const authService = {
   // Register new user
   signup: async (email, password) => {
     try {
-      // If no API URL (production without backend), return mock success
-      if (!API_BASE_URL) {
-        return {
-          success: true,
-          message: 'Demo mode - signup successful'
-        };
-      }
-
       const response = await fetch(`${API_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: {

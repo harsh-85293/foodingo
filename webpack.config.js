@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
@@ -61,6 +62,9 @@ module.exports = (env, argv) => {
           { from: 'public/favicon.ico', to: 'favicon.ico' },
           { from: 'public/_redirects', to: '_redirects', toType: 'file' }
         ],
+      }),
+      new webpack.DefinePlugin({
+        'process.env.REACT_APP_API_URL': JSON.stringify(process.env.REACT_APP_API_URL || '')
       }),
     ],
     resolve: {

@@ -13,8 +13,15 @@ const app = express();
 connectDB();
 
 // Middleware
+const allowedOrigins = (process.env.CLIENT_URL || '').split(',').filter(Boolean);
 app.use(cors({
-  origin: 'http://localhost:1234', // React app URL
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 app.use(express.json());

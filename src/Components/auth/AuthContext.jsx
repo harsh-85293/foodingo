@@ -1,28 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-
-// Mock auth service for demo mode
-const mockAuthService = {
-  login: async (email, password) => ({
-    success: true,
-    message: 'Demo login successful',
-    token: 'demo-token-' + Date.now(),
-    user: { email: email }
-  }),
-  signup: async (email, password) => ({
-    success: true,
-    message: 'Demo signup successful'
-  }),
-  verifyToken: async () => {
-    const token = localStorage.getItem('token');
-    if (token && token.startsWith('demo-token')) {
-      return {
-        success: true,
-        user: { email: 'demo@example.com' }
-      };
-    }
-    return { success: false, message: 'Invalid token' };
-  }
-};
+import { authService } from '../../services/authService';
 
 // Initial state
 const initialState = {
@@ -127,8 +104,7 @@ export const AuthProvider = ({ children }) => {
 
   // Check authentication status on app load
   useEffect(() => {
-    // Immediately set loading to false for demo mode
-    dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+    checkAuthStatus();
   }, []);
 
   // Login function
@@ -136,11 +112,13 @@ export const AuthProvider = ({ children }) => {
     try {
       dispatch({ type: AUTH_ACTIONS.LOGIN_START });
       
-      const response = await mockAuthService.login(email, password);
+      const response = await authService.login(email, password);
       
       if (response.success) {
         // Store token in localStorage
-        localStorage.setItem('token', response.token);
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+        }
         
         dispatch({
           type: AUTH_ACTIONS.LOGIN_SUCCESS,
@@ -159,7 +137,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, message: response.message };
       }
     } catch (error) {
-      const errorMessage = 'Demo login error';
+      const errorMessage = 'Login failed. Please try again.';
       dispatch({
         type: AUTH_ACTIONS.LOGIN_FAILURE,
         payload: errorMessage
@@ -173,7 +151,7 @@ export const AuthProvider = ({ children }) => {
     try {
       dispatch({ type: AUTH_ACTIONS.SIGNUP_START });
       
-      const response = await mockAuthService.signup(email, password);
+      const response = await authService.signup(email, password);
       
       if (response.success) {
         dispatch({ type: AUTH_ACTIONS.SIGNUP_SUCCESS });
@@ -186,7 +164,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, message: response.message, errors: response.errors };
       }
     } catch (error) {
-      const errorMessage = 'Demo signup error';
+      const errorMessage = 'Signup failed. Please try again.';
       dispatch({
         type: AUTH_ACTIONS.SIGNUP_FAILURE,
         payload: errorMessage
@@ -204,10 +182,14 @@ export const AuthProvider = ({ children }) => {
   // Check authentication status
   const checkAuthStatus = async () => {
     try {
-      // Always set loading to false in demo mode
-      dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+      dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
+      const result = await authService.verifyToken();
+      if (result.success && result.user) {
+        dispatch({ type: AUTH_ACTIONS.SET_USER, payload: result.user });
+      } else {
+        dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+      }
     } catch (error) {
-      console.warn('Auth check failed, continuing without authentication:', error);
       dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
     }
   };
