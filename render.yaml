@@ -2,6 +2,6 @@ services:
   - type: web
     name: foodingo
     env: node
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
