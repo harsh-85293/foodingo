@@ -31,15 +31,18 @@ const corsOptions = {
   preflightContinue: false
 };
 
-// Add CORS headers to ALL requests first (before body parsing)
+// CORS middleware - MUST be first to handle all requests including OPTIONS
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers');
+  // Set CORS headers on ALL responses
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers');
+  res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
   
   // Handle preflight OPTIONS requests immediately
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
+    console.log('OPTIONS preflight request received for:', req.path);
+    return res.status(200).end();
   }
   next();
 });
@@ -58,9 +61,14 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'Server is running', status: 'OK' });
 });
 
-// Error handling middleware
+// Error handling middleware - ensure CORS headers are set
 app.use((err, req, res, next) => {
   console.error(err.stack);
+  // Ensure CORS headers are set on error responses
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers');
+  
   res.status(500).json({
     success: false,
     message: 'Something went wrong!',
@@ -68,12 +76,19 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Handle 404 routes (but skip OPTIONS requests as they're handled above)
+// Handle 404 routes - ensure CORS headers are set
 app.use('*', (req, res) => {
-  // Don't interfere with OPTIONS requests
+  // Ensure CORS headers are set on 404 responses
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers');
+  
+  // Handle OPTIONS requests
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
+    console.log('OPTIONS request for 404 route:', req.path);
+    return res.status(200).end();
   }
+  
   res.status(404).json({
     success: false,
     message: 'Route not found'
