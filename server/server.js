@@ -12,25 +12,10 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-// Middleware
-const allowedOrigins = [
-  'http://localhost:1234',
-  'http://localhost:3000',
-  'https://foodingo-yp5a.onrender.com'
-];
-
+// Middleware - Allow all origins for now
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
+  origin: '*',
+  credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
