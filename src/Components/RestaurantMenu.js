@@ -6,13 +6,23 @@ import RestaurantCategory from './RestaurantItems/RestaurantCategory';
 
 const RestaurantMenu = () => {
     const { resId } = useParams();
-    const resInfo = useRestaurantMenu(resId);
+    const { resInfo, error } = useRestaurantMenu(resId);
 
     // Create a state variable to hide and show the RestaurantItemCategory from the parent
     const [showIndex, setShowIndex] = useState(null);
 
     // Passing the dummy data to the RestaurantCategory
     const dummy = "Dummy Data";
+
+    if (error) {
+        return (
+            <div className="text-center py-20">
+                <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Menu</h2>
+                <p className="text-gray-600">{error}</p>
+                <p className="text-sm text-gray-500 mt-4">Please try again later or check your internet connection.</p>
+            </div>
+        );
+    }
 
     if (resInfo === null) return (<Shimmer />);
 
